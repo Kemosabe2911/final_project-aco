@@ -32,6 +32,13 @@ class AntColony(object):
             all_paths = self.get_all_paths(start, dest)
             self.update_pheromone(all_paths, self.n_best, shortest_path= shortest_path)
             shortest_path = min(all_paths, key=lambda x: x[1])
+            longest_path = max(all_paths, key=lambda x: x[1])
+            maxDist = longest_path[1]
+            if(i==2):
+                shaking= ShakingFunction(self.distances, self.pheromone_matrix, maxDist, p=0.2, startEdge= 6, endEdge= 8)
+                shaking.shaking_pheromones()
+            # print(maxDist)
+            # self.find_shaking_nodes(self.distances, maxDist, p=0.2, startEdge=3, endEdge=4)
             #print(shortest_path)
             if shortest_path[1] < all_time_shortest_path[1]:
                 all_time_shortest_path = shortest_path
@@ -139,3 +146,42 @@ class AntColony(object):
             return True
         else:
             return False
+
+    # def find_shaking_nodes(self, distance, maxDist, p, startEdge, endEdge):
+    #     shaking_nodes_list=[]
+    #     # print(len(distance))
+    #     for i in range(len(distance)):
+    #         sub_Colony1 = AntColony(distance,10,1,1,0.95,1,1)
+    #         a= sub_Colony1.get_route(start= startEdge, dest= i)
+    #         b= sub_Colony1.get_route(start= i, dest= endEdge)
+    #         if a[1]< (p*maxDist) and b[1] < (p*maxDist):
+    #             shaking_nodes_list.append(i)
+    #     print(shaking_nodes_list)
+    #     return shaking_nodes_list
+
+class ShakingFunction(object):
+    #Initialization
+    def __init__(self, distances, pheromone_matrix, maxDist, p, startEdge, endEdge):
+        self.distances = distances
+        self.pheromones = pheromone_matrix
+        self.maxDist = maxDist
+        self.p = p
+        self.startEdge = startEdge
+        self.endEdge = endEdge
+        self.colony = AntColony(distances, 10, 1, 5, 0.95, alpha=1, beta=1)
+
+    def shaking_pheromones(self):
+        self.find_shaking_nodes(start= self.startEdge, end= self.endEdge)
+
+
+    def find_shaking_nodes(self, start, end):
+        shaking_nodes_list=[]
+        for i in range(len(self.distances)):
+            if i==start or i==end:
+                continue
+            route1= self.colony.get_route(start= start, dest= i)
+            route2= self.colony.get_route(start= i, dest= end)
+            if route1[1]< (self.p * self.maxDist) or route2[1]< (self.p * self.maxDist):
+                shaking_nodes_list.append(i)
+        print(shaking_nodes_list)
+        return shaking_nodes_list
