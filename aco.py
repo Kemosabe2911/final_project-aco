@@ -2,6 +2,15 @@ import numpy as np
 import random as rn
 import math
 from numpy.random import choice as np_choice
+from collections import Counter
+
+def countDist(myList):
+    distList= []
+    for i in myList:
+        distList.append(i[1])
+    pathCount = dict(Counter(distList))
+    for key in sorted(pathCount):
+        print(f"{key}: {pathCount[key]}")
 
 class AntColony(object):
 
@@ -27,11 +36,17 @@ class AntColony(object):
         self.start = start
         self.dest = dest
         shortest_path = None
+        allRoutes = None
         all_time_shortest_path = ("placeholder", np.inf)
         self.initial_pheromone()
         #print(self.pheromone_matrix)
         for i in range(self.n_iterations):
             all_paths = self.get_all_paths(start, dest)
+            print(f"\n{i+1} Iteration: ")
+            countDist(all_paths)
+            # print(all_paths)
+            # pathCount = dict(Counter(all_paths))
+            # print(pathCount)
             self.update_pheromone(all_paths, self.n_best, shortest_path= shortest_path)
             shortest_path = min(all_paths, key=lambda x: x[1])
             longest_path = max(all_paths, key=lambda x: x[1])
@@ -47,6 +62,7 @@ class AntColony(object):
             #print(all_time_shortest_path)
             #self.pheromone *= self.decay
             self.pheromone_decay()
+            # allRoutes = all_paths
         return all_time_shortest_path
 
     def initial_pheromone(self):
