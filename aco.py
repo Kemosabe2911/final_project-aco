@@ -15,7 +15,7 @@ def countDist(myList):
 class AntColony(object):
 
     #Initialization
-    def __init__(self, distances, n_ants, n_best, n_iterations, p_decay, alpha=1, beta=1):
+    def __init__(self, distances, n_ants, n_best, n_iterations, p_decay, alpha=1, beta=1, shaking= False):
         self.distances = distances
         self.n_ants = n_ants
         self.n_best = n_best
@@ -27,6 +27,7 @@ class AntColony(object):
         self.decay = p_decay
         self.alpha = alpha
         self.beta = beta
+        self.shaking = shaking
         self.i_pheromone = 1/len(distances)
         #print(np.full((len(distances),len(distances)), 1/len(distances)))
         for i in range(len(distances)):
@@ -42,8 +43,9 @@ class AntColony(object):
         #print(self.pheromone_matrix)
         for i in range(self.n_iterations):
             all_paths = self.get_all_paths(start, dest)
-            print(f"\n{i+1} Iteration: ")
-            countDist(all_paths)
+            if self.shaking:
+                print(f"\n{i+1} Iteration: ")
+                countDist(all_paths)
             # print(all_paths)
             # pathCount = dict(Counter(all_paths))
             # print(pathCount)
@@ -55,8 +57,9 @@ class AntColony(object):
             #     shaking= ShakingFunction(self.distances, self.pheromone_matrix, maxDist, p=0.2, startEdge= 6, endEdge= 8)
             #     shaking.shaking_pheromones()
             # print(maxDist)
-            # self.find_shaking_nodes(self.distances, maxDist, p=0.2, startEdge=3, endEdge=4)
-            #print(shortest_path)
+            if(self.shaking and i==2):
+                self.find_shaking_nodes(self.distances, maxDist, p=0.2, startEdge=3, endEdge=4)
+            print(shortest_path)
             if shortest_path[1] < all_time_shortest_path[1]:
                 all_time_shortest_path = shortest_path
             #print(all_time_shortest_path)
@@ -169,7 +172,7 @@ class AntColony(object):
         shaking_nodes_list=[]
         # print(len(distance))
         for i in range(len(distance)):
-            sub_Colony1 = AntColony(distance,10,1,1,0.95,1,1)
+            sub_Colony1 = AntColony(distance,10,1,1,0.95,1,1,False)
             a= sub_Colony1.get_route(start= startEdge, dest= i)
             b= sub_Colony1.get_route(start= i, dest= endEdge)
             if a[1]< (p*maxDist) or b[1] < (p*maxDist):
