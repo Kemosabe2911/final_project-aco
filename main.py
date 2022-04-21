@@ -14,8 +14,8 @@ import string
 
 # G.draw('distances.png', format='png', prog='neato')
 
-ant_colony = AntColony(distances, 50, 1, 10, 0.95, alpha=1, beta=1,shaking=True)
-shortest_path = ant_colony.get_route(start= 0, dest= 8)
+ant_colony = AntColony(distances, 100, 1, 10, 0.95, alpha=1, beta=1)
+shortest_path = ant_colony.get_route(start= 0, dest= 8, shaking=False)
 print("\nShortest Path :")
 print(shortest_path[0])
 print("\nDistance :")

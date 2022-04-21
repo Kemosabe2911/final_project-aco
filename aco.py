@@ -1,5 +1,6 @@
 import numpy as np
 import random as rn
+import sys
 import math
 from numpy.random import choice as np_choice
 from collections import Counter
@@ -15,7 +16,7 @@ def countDist(myList):
 class AntColony(object):
 
     #Initialization
-    def __init__(self, distances, n_ants, n_best, n_iterations, p_decay, alpha=1, beta=1, shaking= False):
+    def __init__(self, distances, n_ants, n_best, n_iterations, p_decay, alpha=1, beta=1):
         self.distances = distances
         self.n_ants = n_ants
         self.n_best = n_best
@@ -27,15 +28,15 @@ class AntColony(object):
         self.decay = p_decay
         self.alpha = alpha
         self.beta = beta
-        self.shaking = shaking
         self.i_pheromone = 1/len(distances)
         #print(np.full((len(distances),len(distances)), 1/len(distances)))
         for i in range(len(distances)):
             self.index_list.append(i)
 
-    def get_route(self, start, dest):
+    def get_route(self, start, dest, shaking):
         self.start = start
         self.dest = dest
+        self.shaking = shaking
         shortest_path = None
         allRoutes = None
         all_time_shortest_path = ("placeholder", np.inf)
@@ -43,12 +44,11 @@ class AntColony(object):
         #print(self.pheromone_matrix)
         for i in range(self.n_iterations):
             all_paths = self.get_all_paths(start, dest)
-            if self.shaking:
-                print(f"\n{i+1} Iteration: ")
-                countDist(all_paths)
-            # print(all_paths)
-            # pathCount = dict(Counter(all_paths))
-            # print(pathCount)
+            if not all_paths:
+                # print("Paths empty")
+                continue
+            print(f"\n{i+1} Iteration: ")
+            countDist(all_paths)
             self.update_pheromone(all_paths, self.n_best, shortest_path= shortest_path)
             shortest_path = min(all_paths, key=lambda x: x[1])
             longest_path = max(all_paths, key=lambda x: x[1])
@@ -58,8 +58,14 @@ class AntColony(object):
             #     shaking.shaking_pheromones()
             # print(maxDist)
             if(self.shaking and i==2):
-                self.find_shaking_nodes(self.distances, maxDist, p=0.2, startEdge=3, endEdge=4)
-            print(shortest_path)
+                self.find_shaking_nodes(self.distances, maxDist, p=0.5, startEdge=5, endEdge=6)
+                all_time_shortest_path = ("placeholder", np.inf)
+                # print(all_time_shortest_path)
+                continue
+            if self.shaking:
+                print(f"\n{i+1} Iteration: ")
+                countDist(all_paths)
+                print(shortest_path)
             if shortest_path[1] < all_time_shortest_path[1]:
                 all_time_shortest_path = shortest_path
             #print(all_time_shortest_path)
@@ -172,20 +178,24 @@ class AntColony(object):
         shaking_nodes_list=[]
         # print(len(distance))
         for i in range(len(distance)):
-            sub_Colony1 = AntColony(distance,10,1,1,0.95,1,1,False)
-            a= sub_Colony1.get_route(start= startEdge, dest= i)
-            b= sub_Colony1.get_route(start= i, dest= endEdge)
+            sub_Colony1 = AntColony(distance,10,1,1,0.95,1,1)
+            a= sub_Colony1.get_route(start= startEdge, dest= i,shaking= False)
+            b= sub_Colony1.get_route(start= i, dest= endEdge, shaking= False)
             if a[1]< (p*maxDist) or b[1] < (p*maxDist):
                 shaking_nodes_list.append(i)
+        print("\nShaking Node List:")
         print(shaking_nodes_list)
+        self.update_shaking_nodes(shaking_nodes_list, startEdge, endEdge)
         return shaking_nodes_list
 
     #Shaking Function
-    def update_shaking_nodes(self, shaking_nodes):
+    def update_shaking_nodes(self, shaking_nodes, a, b):
         for i in shaking_nodes:
-            for data in self.pheromone_matrix[i]:
-                if data != np.inf :
-                    data = self.i_pheromone * (1 + math.log(data / self.i_pheromone ))
+            for j in range(len(self.distances)):
+                data = self.pheromone_matrix[i][j]
+                if data != 0 :
+                    self.pheromone_matrix[i][j] = self.i_pheromone * (1 + math.log(data / self.i_pheromone ))
+        self.pheromone_matrix[a][b], self.pheromone_matrix[b][a]= 0,0
 
 # class ShakingFunction(object):
 #     #Initialization
