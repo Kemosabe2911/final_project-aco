@@ -58,7 +58,9 @@ class AntColony(object):
             #     shaking.shaking_pheromones()
             # print(maxDist)
             if(self.shaking and i==2):
-                self.find_shaking_nodes(self.distances, maxDist, p=0.5, startEdge=5, endEdge=6)
+                startEdge = int(input("Enter startedge: "))
+                endEdge = int(input("Enter endedge: "))
+                self.find_shaking_nodes(self.distances, maxDist, p=0.5, startEdge=startEdge, endEdge=endEdge)
                 all_time_shortest_path = ("placeholder", np.inf)
                 # print(all_time_shortest_path)
                 continue
@@ -134,16 +136,16 @@ class AntColony(object):
             path.append((prev, move))
             prev = next_node
             visited.add(move)
-            #print(path)
+            # print(path)
             if(move == dest):
                 break
-        #print(path)
+        # print(path)
         return path
 
     def choose_node(self, pheromone, distance, visited):
         #pheromone = np.copy(pheromone)
         #print(pheromone)
-        #print(visited)
+        # print(visited)
         for i in list(visited):
             pheromone[i] = 0
         #pheromone[list(visited)] = 0
@@ -156,8 +158,9 @@ class AntColony(object):
         #row = pheromone ** self.alpha * (( 1.0 / distance) ** self.beta)
         #prob = row / row.sum()
         row_sum= sum(prob_list)
+        # print(row_sum)
         prob = [ p / row_sum for p in prob_list ]
-        #print(prob)
+        # print(prob)
         #print(self.index_list)
         next_node = np_choice(self.index_list, 1, p=prob)[0]
         #print(next_node)
@@ -176,7 +179,6 @@ class AntColony(object):
 
     def find_shaking_nodes(self, distance, maxDist, p, startEdge, endEdge):
         shaking_nodes_list=[]
-        # print(len(distance))
         for i in range(len(distance)):
             sub_Colony1 = AntColony(distance,10,1,1,0.95,1,1)
             a= sub_Colony1.get_route(start= startEdge, dest= i,shaking= False)
