@@ -4,6 +4,7 @@ import sys
 import math
 from numpy.random import choice as np_choice
 from collections import Counter
+import datetime
 
 def countDist(myList):
     distList= []
@@ -34,6 +35,7 @@ class AntColony(object):
             self.index_list.append(i)
 
     def get_route(self, start, dest, shaking):
+        td1 = datetime.datetime.now()
         self.start = start
         self.dest = dest
         self.shaking = shaking
@@ -74,6 +76,9 @@ class AntColony(object):
             #self.pheromone *= self.decay
             self.pheromone_decay()
             # allRoutes = all_paths
+        td2 = datetime.datetime.now()
+        time_diff = td2 - td1
+        print(f"\nTime taken: {time_diff.total_seconds()}")
         return all_time_shortest_path
 
     def initial_pheromone(self):

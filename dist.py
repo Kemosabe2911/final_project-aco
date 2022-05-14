@@ -48,21 +48,31 @@ for i in range(20*c):
         distances[int(a),int(b)], distances[int(b),int(a)] = np.inf, np.inf
 
 from aco import AntColony
+while True:
+    source = int(input("Enter source: "))
+    dest = int(input("Enter destination: "))
+    choice = input("Shaking(Y/N): ")
+    if choice=='Y' or choice=='y':
+        shaking = True
+    else:
+        shaking = False
 
-source = int(input("Enter source: "))
-dest = int(input("Enter destination: "))
-choice = input("Shaking(Y/N): ")
-if choice=='Y' or choice=='y':
-    shaking = True
-else: 
-    shaking = False
+    ant_colony = AntColony(distances, 200, 1, 10, 0.95, alpha=1, beta=1)
+    shortest_path = ant_colony.get_route(start= source, dest= dest, shaking=shaking)
+    print("\nShortest Path :")
+    print(shortest_path[0])
+    print("\nDistance :")
+    print(shortest_path[1])
 
-ant_colony = AntColony(distances, 100, 1, 10, 0.95, alpha=1, beta=1)
-shortest_path = ant_colony.get_route(start= source, dest= dest, shaking=shaking)
-print("\nShortest Path :")
-print(shortest_path[0])
-print("\nDistance :")
-print(shortest_path[1])
+    print("Choice \n 0: Continue \n 1: Exit \n")
+    c = int(input("Enter Choice: "))
+    if c==0:
+        continue
+    elif c==1:
+        break
+    else:
+        print("\nInvalid Choice")
+        break
 
 
 # distances = np.array([[np.inf,3,4,np.inf,np.inf,np.inf,np.inf,np.inf,np.inf],
