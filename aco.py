@@ -17,8 +17,9 @@ def countDist(myList):
 class AntColony(object):
 
     #Initialization
-    def __init__(self, distances, n_ants, n_best, n_iterations, p_decay, alpha=1, beta=1):
+    def __init__(self, distances, aqi, n_ants, n_best, n_iterations, p_decay, alpha=1, beta=1, gamma=1):
         self.distances = distances
+        self.aqi = aqi
         self.n_ants = n_ants
         self.n_best = n_best
         self.n_iterations = n_iterations
@@ -29,6 +30,7 @@ class AntColony(object):
         self.decay = p_decay
         self.alpha = alpha
         self.beta = beta
+        self.gamma = gamma
         self.i_pheromone = 1/len(distances)
         #print(np.full((len(distances),len(distances)), 1/len(distances)))
         for i in range(len(distances)):
@@ -62,13 +64,19 @@ class AntColony(object):
             if(self.shaking and i==2):
                 startEdge = int(input("Enter startedge: "))
                 endEdge = int(input("Enter endedge: "))
-                self.find_shaking_nodes(self.distances, maxDist, p=0.5, startEdge=startEdge, endEdge=endEdge)
+                updatedValue = int(input("Enter value: "))
+                if updatedValue == 0 :
+                    val = np.inf
+                else:
+                    val = updatedValue
+                self.distances[startEdge][endEdge],self.distances[endEdge][startEdge] = val, val
+                self.find_shaking_nodes(self.distances, maxDist, p=0.2, startEdge=startEdge, endEdge=endEdge, updatedValue = updatedValue)
                 all_time_shortest_path = ("placeholder", np.inf)
                 # print(all_time_shortest_path)
                 continue
             if self.shaking:
                 print(f"\n{i+1} Iteration: ")
-                countDist(all_paths)
+                # countDist(all_paths)
                 print(shortest_path)
             if shortest_path[1] < all_time_shortest_path[1]:
                 all_time_shortest_path = shortest_path
@@ -120,6 +128,12 @@ class AntColony(object):
     def get_path_dist(self, path):
         total_dist = 0
         for ele in path:
+            total_dist += self.distances[ele[0]][ele[1]] + self.aqi[ele[1]]
+        return total_dist
+
+    def get_actual_distance(self, path):
+        total_dist = 0
+        for ele in path:
             total_dist += self.distances[ele[0]][ele[1]]
         return total_dist
 
@@ -158,7 +172,7 @@ class AntColony(object):
             return None
         prob_list=[]
         for j in range(len(distance)):
-            row = (pheromone[j] ** self.alpha) * ((1.0 / distance[j]) ** self.beta)
+            row = (pheromone[j] ** self.alpha) * ((1.0 / distance[j]) ** self.beta) * ((1.0 / self.aqi[j]) ** self.gamma)
             prob_list.append(row)
         #row = pheromone ** self.alpha * (( 1.0 / distance) ** self.beta)
         #prob = row / row.sum()
@@ -182,7 +196,7 @@ class AntColony(object):
         else:
             return False
 
-    def find_shaking_nodes(self, distance, maxDist, p, startEdge, endEdge):
+    def find_shaking_nodes(self, distance, maxDist, p, startEdge, endEdge , updatedValue):
         shaking_nodes_list=[]
         for i in range(len(distance)):
             sub_Colony1 = AntColony(distance,10,1,1,0.95,1,1)
@@ -192,17 +206,21 @@ class AntColony(object):
                 shaking_nodes_list.append(i)
         print("\nShaking Node List:")
         print(shaking_nodes_list)
-        self.update_shaking_nodes(shaking_nodes_list, startEdge, endEdge)
+        self.update_shaking_nodes(shaking_nodes_list, startEdge, endEdge, updatedValue)
         return shaking_nodes_list
 
     #Shaking Function
-    def update_shaking_nodes(self, shaking_nodes, a, b):
+    def update_shaking_nodes(self, shaking_nodes, a, b, v):
         for i in shaking_nodes:
             for j in range(len(self.distances)):
                 data = self.pheromone_matrix[i][j]
                 if data != 0 :
                     self.pheromone_matrix[i][j] = self.i_pheromone * (1 + math.log(data / self.i_pheromone ))
-        self.pheromone_matrix[a][b], self.pheromone_matrix[b][a]= 0,0
+        if v == 0:
+            self.pheromone_matrix[a][b], self.pheromone_matrix[b][a]= 0,0
+        else:
+            self.pheromone_matrix[a][b], self.pheromone_matrix[b][a]= self.i_pheromone, self.i_pheromone
+        # self.pheromone_matrix[a][b], self.pheromone_matrix[b][a]= 0,0
 
 # class ShakingFunction(object):
 #     #Initialization
