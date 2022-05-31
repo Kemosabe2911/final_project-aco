@@ -53,8 +53,8 @@ for i in range(20*c):
 
 # for i in range(c):
 #     print(f"{i} : {aqi[i]}")
-aqi = [1, 4, 8, 8, 6, 7, 7, 2, 2, 8, 9, 6, 1, 4, 5, 5, 4, 8, 6, 6, 1, 9, 5, 9, 9, 1, 8, 9, 9, 7, 7, 2, 6, 1, 9, 3, 7, 8, 5, 3, 2, 8, 2, 1, 9, 8, 1, 2, 5, 4]
-print(aqi)
+tqi = [1, 4, 8, 8, 6, 7, 7, 2, 2, 8, 9, 6, 1, 4, 5, 5, 4, 8, 6, 6, 1, 9, 5, 9, 9, 1, 8, 9, 9, 7, 7, 2, 6, 1, 9, 3, 7, 8, 5, 3, 2, 8, 2, 1, 9, 8, 1, 2, 5, 4]
+print(tqi)
 
 ti = np.full((c,c), 0)
 
@@ -79,7 +79,7 @@ while True:
     else:
         shaking = False
 
-    ant_colony = AntColony(distances, aqi, ti, 200, 1, 10, 0.95, alpha=1, beta=1, gamma=1, delta=1)
+    ant_colony = AntColony(distances, tqi, 200, 1, 10, 0.95, alpha=1, beta=1, gamma=1)
     shortest_path = ant_colony.get_route(start= source, dest= dest, shaking=shaking)
     print("\nShortest Path :")
     print(shortest_path[0])
