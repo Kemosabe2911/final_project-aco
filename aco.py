@@ -48,8 +48,8 @@ class AntColony(object):
             all_paths = self.get_all_paths(start, dest)
             if not all_paths:
                 continue
-            print(f"\n{i+1} Iteration: ")
-            countDist(all_paths)
+            # print(f"\n{i+1} Iteration: ")
+            # countDist(all_paths)
             self.update_pheromone(all_paths, self.n_best, shortest_path= shortest_path)
             shortest_path = min(all_paths, key=lambda x: x[1])
             longest_path = max(all_paths, key=lambda x: x[1])
@@ -80,19 +80,20 @@ class AntColony(object):
                 all_time_shortest_path = ("placeholder", np.inf)
                 continue
 
-            if self.shaking:
-                print(f"\n{i+1} Iteration: ")
-                # countDist(all_paths)
-                print(shortest_path)
+            # if self.shaking:
+            #     print(f"\n{i+1} Iteration: ")
+            #     # countDist(all_paths)
+            #     print(shortest_path)
             if shortest_path[1] < all_time_shortest_path[1]:
                 all_time_shortest_path = shortest_path
-            #print(all_time_shortest_path)
             #self.pheromone *= self.decay
+            print(f"\n{i+1} Iteration: ")
+            print(all_time_shortest_path)
             self.pheromone_decay()
             # allRoutes = all_paths
-        td2 = datetime.datetime.now()
-        time_diff = td2 - td1
-        print(f"\nTime taken: {time_diff.total_seconds()}")
+        # td2 = datetime.datetime.now()
+        # time_diff = td2 - td1
+        # print(f"\nTime taken: {time_diff.total_seconds()}")
         return all_time_shortest_path
 
     def initial_pheromone(self):
@@ -205,7 +206,7 @@ class AntColony(object):
     def find_shaking_nodes(self, distance, maxDist, p, startEdge, endEdge , updatedValue):
         shaking_nodes_list=[]
         for i in range(len(distance)):
-            sub_Colony1 = AntColony(distance,self.aqi, self.ti,10,1,1,0.95,1,1,1)
+            sub_Colony1 = AntColony(distance,self.tqi,10,1,1,0.95,1,1,1)
             a= sub_Colony1.get_route(start= startEdge, dest= i,shaking= False)
             b= sub_Colony1.get_route(start= i, dest= endEdge, shaking= False)
             if a[1]< (p*maxDist) or b[1] < (p*maxDist):
@@ -218,7 +219,7 @@ class AntColony(object):
     def find_link_shakenodes(self, distance, maxDist, p, node):
         shaking_nodes_list=[]
         for i in range(len(distance)):
-            sub_Colony1 = AntColony(distance,self.aqi,self.ti,10,1,1,0.95,1,1,1)
+            sub_Colony1 = AntColony(distance,self.tqi,10,1,1,0.95,1,1,1)
             a= sub_Colony1.get_route(start= node, dest= i,shaking= False)
             if a[1]< (p*maxDist):
                 shaking_nodes_list.append(i)

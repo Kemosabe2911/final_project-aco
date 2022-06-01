@@ -79,9 +79,9 @@ while True:
     else:
         shaking = False
 
-    ant_colony = AntColony(distances, tqi, 200, 1, 10, 0.95, alpha=1, beta=1, gamma=1)
+    ant_colony = AntColony(distances, tqi, 500, 1, 10, 0.95, alpha=1, beta=1, gamma=1)
     shortest_path = ant_colony.get_route(start= source, dest= dest, shaking=shaking)
-    print("\nShortest Path :")
+    print("\nOptimal Path :")
     print(shortest_path[0])
     print("\nDistance :")
     print(shortest_path[1])
